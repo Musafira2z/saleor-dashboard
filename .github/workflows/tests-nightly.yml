@@ -106,14 +106,14 @@ jobs:
         id: get-typed-env-uri
         if: ${{ github.event.inputs.environment == 'Other' }}
         run: |
-          echo "::set-output name=ENV_URI::${{github.event.inputs.otherEnvironment}}"
+          echo "ENV_URI=${{github.event.inputs.otherEnvironment}}" >> $GITHUB_OUTPUT
       - name: Get env
         id: get-env-uri
         env:
           DEFAULT_ENV_URI: 'https://automation-dashboard.staging.saleor.cloud/'
           TYPED_ENV_URI: ''
         run: |
-          echo "::set-output name=ENV_URI::${{ steps.get-typed-env-uri.outputs.ENV_URI || github.event.inputs.environment || env.DEFAULT_ENV_URI }}"
+          echo "ENV_URI=${{ steps.get-typed-env-uri.outputs.ENV_URI || github.event.inputs.environment || env.DEFAULT_ENV_URI }}" >> $GITHUB_OUTPUT
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -134,7 +134,7 @@ jobs:
           CYPRESS_PERMISSIONS_USERS_PASSWORD: ${{ secrets.CYPRESS_PERMISSIONS_USERS_PASSWORD }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_mailHogUrl: ${{ secrets.CYPRESS_MAILHOG }}
+          CYPRESS_MAILPITURL: ${{ secrets.CYPRESS_MAILPITURL }}
           COMMIT_INFO_MESSAGE: All tests triggered via ${{ github.event_name}} on ${{ steps.get-env-uri.outputs.ENV_URI }}
           CYPRESS_grepTags: ${{ github.event.inputs.tags }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
@@ -195,7 +195,7 @@ jobs:
         env:
           version: ${{github.event.client_payload.version}}
         run: |
-              echo "::set-output name=ref::$(echo $version | grep -ohE "[0-9]\.[0-9]+" )"
+              echo "ref=$(echo $version | grep -ohE "[0-9]\.[0-9]+" )" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -218,7 +218,7 @@ jobs:
           STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_mailHogUrl: ${{ secrets.CYPRESS_MAILHOG }}
+          CYPRESS_MAILPITURL: ${{ secrets.CYPRESS_MAILPITURL }}
           COMMIT_INFO_MESSAGE: Critical triggered via release - ${{github.event.client_payload.project}} ${{github.event.client_payload.version}}, ${{github.event.client_payload.pullRequestUrl}}
           CYPRESS_grepTags: '@stable'
         with:
