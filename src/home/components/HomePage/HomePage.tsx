@@ -16,7 +16,7 @@ import HomeAnalyticsCard from "../HomeAnalyticsCard";
 import HomeHeader from "../HomeHeader";
 import HomeNotificationTable from "../HomeNotificationTable/HomeNotificationTable";
 import HomeProductListCard from "../HomeProductListCard";
-
+import SelectPeriod from "../SelectPeriod/SelectPeriod";
 const useStyles = makeStyles(
   theme => ({
     cardContainer: {
@@ -44,14 +44,18 @@ export interface HomePageProps {
   ordersToCapture: number | null;
   ordersToFulfill: number | null;
   productsOutOfStock: number;
-  sales: HomeQuery["salesToday"]["gross"];
-  topProducts: RelayToFlat<HomeQuery["productTopToday"]> | null;
+  sales: HomeQuery["salesPeriod"]["gross"];
+  topProducts: RelayToFlat<HomeQuery["topProducts"]> | null;
   userName: string;
   createNewChannelHref: string;
   ordersToFulfillHref: string;
   ordersToCaptureHref: string;
   productsOutOfStockHref: string;
   noChannel: boolean;
+  fetchMore: any;
+  pageInfo: any;
+  period: any;
+  setPeriod: any;
 }
 
 const HomePage: React.FC<HomePageProps> = props => {
@@ -69,9 +73,17 @@ const HomePage: React.FC<HomePageProps> = props => {
     ordersToFulfill = 0,
     productsOutOfStock = 0,
     noChannel,
+    fetchMore,
+    pageInfo,
+    period,
+    setPeriod,
   } = props;
 
   const classes = useStyles(props);
+
+  const handleChange = (event: { target: { value: any } }) => {
+    setPeriod(event.target.value);
+  };
 
   return (
     <Container>
@@ -134,6 +146,7 @@ const HomePage: React.FC<HomePageProps> = props => {
             noChannel={noChannel}
           />
           <CardSpacer />
+          <SelectPeriod period={period} handleChange={handleChange} />
           {topProducts && (
             <RequirePermissions
               requiredPermissions={[
@@ -142,6 +155,8 @@ const HomePage: React.FC<HomePageProps> = props => {
               ]}
             >
               <HomeProductListCard
+                fetchMore={fetchMore}
+                pageInfo={pageInfo}
                 testId="top-products"
                 topProducts={topProducts}
               />

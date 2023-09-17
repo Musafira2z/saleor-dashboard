@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import {
+  Box,
   Card,
   TableBody,
   TableCell,
@@ -10,9 +12,11 @@ import Money from "@saleor/components/Money";
 import ResponsiveTable from "@saleor/components/ResponsiveTable";
 import Skeleton from "@saleor/components/Skeleton";
 import TableCellAvatar from "@saleor/components/TableCellAvatar";
+import { TablePaginationActions } from "@saleor/components/TablePagination";
 import TableRowLink from "@saleor/components/TableRowLink";
 import { HomeQuery } from "@saleor/graphql";
 import { makeStyles } from "@saleor/macaw-ui";
+// import { variant } from "@saleor/products/fixtures";
 import { productVariantEditUrl } from "@saleor/products/urls";
 import { RelayToFlat } from "@saleor/types";
 import classNames from "classnames";
@@ -52,14 +56,31 @@ const useStyles = makeStyles(
 
 interface HomeProductListProps {
   testId?: string;
-  topProducts: RelayToFlat<HomeQuery["productTopToday"]>;
+  topProducts: RelayToFlat<HomeQuery["topProducts"]>;
+  fetchMore: any;
+  pageInfo: any;
 }
 
 export const HomeProductList: React.FC<HomeProductListProps> = props => {
-  const { topProducts, testId } = props;
+  const { topProducts, testId, fetchMore, pageInfo } = props;
   const classes = useStyles(props);
-
   const intl = useIntl();
+
+  const handleFetchMore = (cursor: string) => {
+    fetchMore({
+      variables: {
+        firstTopProducts: 10,
+        afterTopProducts: cursor,
+        // beforeTopProducts:cursor?.startCursor,
+      },
+      updateQuery: (prev: any, { fetchMoreResult }: any) => {
+        if (!fetchMoreResult) {
+          return prev;
+        }
+        return fetchMoreResult;
+      },
+    });
+  };
 
   return (
     <Card data-test-id={testId}>
@@ -132,6 +153,9 @@ export const HomeProductList: React.FC<HomeProductListProps> = props => {
                       <Skeleton />,
                     )}
                   </Typography>
+                  <Typography align={"right"} color="primary">
+                    Available: {variant.quantityAvailable}
+                  </Typography>
                 </TableCell>
               </TableRowLink>
             ),
@@ -150,6 +174,16 @@ export const HomeProductList: React.FC<HomeProductListProps> = props => {
           )}
         </TableBody>
       </ResponsiveTable>
+      <Box style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Box>
+          <TablePaginationActions
+            hasNextPage={pageInfo?.hasNextPage}
+            hasPreviousPage={pageInfo?.hasPreviousPage}
+            onNextPage={() => handleFetchMore(pageInfo.endCursor)}
+            onPreviousPage={() => handleFetchMore(pageInfo.start)}
+          />
+        </Box>
+      </Box>
     </Card>
   );
 };

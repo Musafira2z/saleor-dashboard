@@ -4,10 +4,19 @@ export const home = gql`
   query Home(
     $channel: String!
     $datePeriod: DateRangeInput!
+    $reportingPeriod: ReportingPeriod!
     $PERMISSION_MANAGE_PRODUCTS: Boolean!
     $PERMISSION_MANAGE_ORDERS: Boolean!
+    $firstTopProducts: Int
+    $lastTopProducts: Int
+    $beforeTopProducts: String
+    $afterTopProducts: String
+    $firstActivities: Int
+    $lastActivities: Int
+    $beforeActivities: String
+    $afterActivities: String
   ) {
-    salesToday: ordersTotal(period: TODAY, channel: $channel)
+    salesPeriod: ordersTotal(period: $reportingPeriod, channel: $channel)
       @include(if: $PERMISSION_MANAGE_ORDERS) {
       gross {
         amount
@@ -30,21 +39,36 @@ export const home = gql`
     ) @include(if: $PERMISSION_MANAGE_ORDERS) {
       totalCount
     }
+    ordersToUnconfirmed: orders(
+      filter: { status: UNCONFIRMED }
+      channel: $channel
+    ) @include(if: $PERMISSION_MANAGE_ORDERS) {
+      totalCount
+    }
+    ordersToUnfulfilled: orders(
+      filter: { status: UNFULFILLED }
+      channel: $channel
+    ) @include(if: $PERMISSION_MANAGE_ORDERS) {
+      totalCount
+    }
     productsOutOfStock: products(
       filter: { stockAvailability: OUT_OF_STOCK }
       channel: $channel
     ) {
       totalCount
     }
-    productTopToday: reportProductSales(
-      period: TODAY
-      first: 5
+    topProducts: reportProductSales(
+      period: $reportingPeriod
+      first: $firstTopProducts
+      last: $lastTopProducts
+      before: $beforeTopProducts
+      after: $afterTopProducts
       channel: $channel
     ) @include(if: $PERMISSION_MANAGE_PRODUCTS) {
       edges {
         node {
           id
-          revenue(period: TODAY) {
+          revenue(period: $reportingPeriod) {
             gross {
               amount
               currency
@@ -63,12 +87,30 @@ export const home = gql`
               url
             }
           }
+          quantityAvailable
+          stocks {
+            quantity
+            productVariant {
+              name
+            }
+          }
           quantityOrdered
         }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+        __typename
+      }
     }
-    activities: homepageEvents(last: 10)
-      @include(if: $PERMISSION_MANAGE_ORDERS) {
+    activities: homepageEvents(
+      first: $firstActivities
+      last: $lastActivities
+      before: $beforeActivities
+      after: $afterActivities
+    ) @include(if: $PERMISSION_MANAGE_ORDERS) {
       edges {
         node {
           amount
@@ -87,6 +129,13 @@ export const home = gql`
             email
           }
         }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+        __typename
       }
     }
   }

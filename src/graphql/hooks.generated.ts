@@ -7433,8 +7433,8 @@ export type CustomerGiftCardListQueryHookResult = ReturnType<typeof useCustomerG
 export type CustomerGiftCardListLazyQueryHookResult = ReturnType<typeof useCustomerGiftCardListLazyQuery>;
 export type CustomerGiftCardListQueryResult = Apollo.QueryResult<Types.CustomerGiftCardListQuery, Types.CustomerGiftCardListQueryVariables>;
 export const HomeDocument = gql`
-    query Home($channel: String!, $datePeriod: DateRangeInput!, $PERMISSION_MANAGE_PRODUCTS: Boolean!, $PERMISSION_MANAGE_ORDERS: Boolean!) {
-  salesToday: ordersTotal(period: TODAY, channel: $channel) @include(if: $PERMISSION_MANAGE_ORDERS) {
+    query Home($channel: String!, $datePeriod: DateRangeInput!, $reportingPeriod: ReportingPeriod!, $PERMISSION_MANAGE_PRODUCTS: Boolean!, $PERMISSION_MANAGE_ORDERS: Boolean!, $firstTopProducts: Int, $lastTopProducts: Int, $beforeTopProducts: String, $afterTopProducts: String, $firstActivities: Int, $lastActivities: Int, $beforeActivities: String, $afterActivities: String) {
+  salesPeriod: ordersTotal(period: $reportingPeriod, channel: $channel) @include(if: $PERMISSION_MANAGE_ORDERS) {
     gross {
       amount
       currency
@@ -7449,17 +7449,30 @@ export const HomeDocument = gql`
   ordersToCapture: orders(filter: {status: READY_TO_CAPTURE}, channel: $channel) @include(if: $PERMISSION_MANAGE_ORDERS) {
     totalCount
   }
+  ordersToUnconfirmed: orders(filter: {status: UNCONFIRMED}, channel: $channel) @include(if: $PERMISSION_MANAGE_ORDERS) {
+    totalCount
+  }
+  ordersToUnfulfilled: orders(filter: {status: UNFULFILLED}, channel: $channel) @include(if: $PERMISSION_MANAGE_ORDERS) {
+    totalCount
+  }
   productsOutOfStock: products(
     filter: {stockAvailability: OUT_OF_STOCK}
     channel: $channel
   ) {
     totalCount
   }
-  productTopToday: reportProductSales(period: TODAY, first: 5, channel: $channel) @include(if: $PERMISSION_MANAGE_PRODUCTS) {
+  topProducts: reportProductSales(
+    period: $reportingPeriod
+    first: $firstTopProducts
+    last: $lastTopProducts
+    before: $beforeTopProducts
+    after: $afterTopProducts
+    channel: $channel
+  ) @include(if: $PERMISSION_MANAGE_PRODUCTS) {
     edges {
       node {
         id
-        revenue(period: TODAY) {
+        revenue(period: $reportingPeriod) {
           gross {
             amount
             currency
@@ -7478,11 +7491,30 @@ export const HomeDocument = gql`
             url
           }
         }
+        quantityAvailable
+        stocks {
+          quantity
+          productVariant {
+            name
+          }
+        }
         quantityOrdered
       }
     }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+      __typename
+    }
   }
-  activities: homepageEvents(last: 10) @include(if: $PERMISSION_MANAGE_ORDERS) {
+  activities: homepageEvents(
+    first: $firstActivities
+    last: $lastActivities
+    before: $beforeActivities
+    after: $afterActivities
+  ) @include(if: $PERMISSION_MANAGE_ORDERS) {
     edges {
       node {
         amount
@@ -7502,6 +7534,13 @@ export const HomeDocument = gql`
         }
       }
     }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+      __typename
+    }
   }
 }
     `;
@@ -7520,8 +7559,17 @@ export const HomeDocument = gql`
  *   variables: {
  *      channel: // value for 'channel'
  *      datePeriod: // value for 'datePeriod'
+ *      reportingPeriod: // value for 'reportingPeriod'
  *      PERMISSION_MANAGE_PRODUCTS: // value for 'PERMISSION_MANAGE_PRODUCTS'
  *      PERMISSION_MANAGE_ORDERS: // value for 'PERMISSION_MANAGE_ORDERS'
+ *      firstTopProducts: // value for 'firstTopProducts'
+ *      lastTopProducts: // value for 'lastTopProducts'
+ *      beforeTopProducts: // value for 'beforeTopProducts'
+ *      afterTopProducts: // value for 'afterTopProducts'
+ *      firstActivities: // value for 'firstActivities'
+ *      lastActivities: // value for 'lastActivities'
+ *      beforeActivities: // value for 'beforeActivities'
+ *      afterActivities: // value for 'afterActivities'
  *   },
  * });
  */
