@@ -1,32 +1,27 @@
-import placeholderImage from "@assets/images/placeholder60x60.png";
 import { adminUserPermissions } from "@saleor/fixtures";
 import { PermissionEnum } from "@saleor/graphql";
-import { mapEdgesToItems } from "@saleor/utils/maps";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 
 import HomePageComponent, {
   HomePageProps,
 } from "../../../home/components/HomePage";
-import { shop as shopFixture } from "../../../home/fixtures";
 import Decorator from "../../Decorator";
 import { MockedUserProvider } from "../customers/MockedUserProvider";
 
-const shop = shopFixture(placeholderImage);
-
 const homePageProps: Omit<HomePageProps, "classes"> = {
-  activities: mapEdgesToItems(shop.activities),
+  activities: undefined,
   noChannel: false,
   createNewChannelHref: "",
   ordersToFulfillHref: "",
   ordersToCaptureHref: "",
   productsOutOfStockHref: "",
-  orders: shop.ordersToday.totalCount,
-  ordersToCapture: shop.ordersToCapture.totalCount,
-  ordersToFulfill: shop.ordersToFulfill.totalCount,
-  productsOutOfStock: shop.productsOutOfStock.totalCount,
-  sales: shop.salesPeriod.gross,
-  topProducts: mapEdgesToItems(shop.topProducts),
+  orders: undefined,
+  ordersToCapture: undefined,
+  ordersToFulfill: undefined,
+  productsOutOfStock: undefined,
+  sales: undefined,
+  topProducts: undefined,
   userName: "admin@example.com",
   period: undefined,
   setPeriod: undefined,
