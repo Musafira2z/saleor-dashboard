@@ -25,9 +25,13 @@ const homePageProps: Omit<HomePageProps, "classes"> = {
   ordersToCapture: shop.ordersToCapture.totalCount,
   ordersToFulfill: shop.ordersToFulfill.totalCount,
   productsOutOfStock: shop.productsOutOfStock.totalCount,
-  sales: shop.salesToday.gross,
-  topProducts: mapEdgesToItems(shop.productTopToday),
+  sales: shop.salesPeriod.gross,
+  topProducts: mapEdgesToItems(shop.topProducts),
   userName: "admin@example.com",
+  period: undefined,
+  setPeriod: undefined,
+  fetchMore: undefined,
+  pageInfo: undefined,
 };
 
 const HomePage = props => {
