@@ -8,7 +8,7 @@ interface IProps {
 
 function SelectPeriod({ period, handleChange }: IProps) {
   return (
-    <FormControl size="small">
+    <FormControl size="small" style={{ marginBottom: 20 }}>
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
@@ -17,7 +17,7 @@ function SelectPeriod({ period, handleChange }: IProps) {
         onChange={handleChange}
       >
         <MenuItem value={1}>Today</MenuItem>
-        <MenuItem value={30}>month</MenuItem>
+        <MenuItem value={30}>Month</MenuItem>
       </Select>
     </FormControl>
   );
