@@ -419,7 +419,7 @@ export const SaleDetails: React.FC<SaleDetailsProps> = ({ id, params }) => {
               ...detailsQueryInclude,
               id,
               input: {
-                variants: variants.map(variant => variant.id),
+                variants,
               },
             },
           })

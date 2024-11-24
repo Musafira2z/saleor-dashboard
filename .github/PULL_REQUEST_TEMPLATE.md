@@ -29,7 +29,7 @@ MARKETPLACE_URL=https://apps.saleor.io
 SALEOR_APPS_ENDPOINT=https://apps.saleor.io/api/saleor-apps
 
 ### Do you want to run more stable tests?
-Tests will be re-run only when the "run e2e" label is added.
+To run all tests, just select the stable checkbox. To speed up tests, increase the number of containers. Tests will be re-run only when the "run e2e" label is added.
 
 1. [ ] stable
 2. [ ] giftCard
@@ -53,5 +53,6 @@ Tests will be re-run only when the "run e2e" label is added.
 20. [ ] translations
 21. [ ] navigation
 22. [ ] variants
+23. [ ] payments
 
 CONTAINERS=1

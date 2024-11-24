@@ -1,6 +1,6 @@
 import React from "react";
 
-interface TableButtonWrapper {
+export interface TableButtonWrapper {
   children: React.ReactElement<{
     onClick?: (e: React.MouseEvent<any>) => void;
     href?: string;

@@ -1,14 +1,17 @@
 import createGenerateClassName from "@material-ui/styles/createGenerateClassName";
 import initStoryshots from "@storybook/addon-storyshots";
+import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 // tslint:disable no-submodule-imports
 import { configure, render } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
 import toJSON from "enzyme-to-json";
 import { mockRandomForEach } from "jest-mock-random";
-import React from "react";
+import React, { ReactPortal } from "react";
+import ReactDOM from "react-dom";
 
 // Fixes useLayoutEffect warnings
 React.useLayoutEffect = React.useEffect;
+
+ReactDOM.createPortal = node => node as ReactPortal;
 
 configure({ adapter: new Adapter() });
 

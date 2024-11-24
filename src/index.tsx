@@ -6,7 +6,7 @@ import { ThemeProvider } from "@saleor/macaw-ui";
 import { SaleorProvider } from "@saleor/sdk";
 import React from "react";
 import { render } from "react-dom";
-import ErrorBoundary from "react-error-boundary";
+import { ErrorBoundary } from "react-error-boundary";
 import TagManager from "react-gtm-module";
 import { useIntl } from "react-intl";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
@@ -30,12 +30,13 @@ import useAppChannel, {
   AppChannelProvider,
 } from "./components/AppLayout/AppChannelContext";
 import { DateProvider } from "./components/Date";
+import ErrorPage from "./components/ErrorPage";
 import ExitFormDialogProvider from "./components/Form/ExitFormDialogProvider";
 import { LocaleProvider } from "./components/Locale";
 import MessageManagerProvider from "./components/messages";
 import { ShopProvider } from "./components/Shop";
 import { WindowTitle } from "./components/WindowTitle";
-import { APP_MOUNT_URI, DEMO_MODE, GTM_ID } from "./config";
+import { DEMO_MODE, getAppMountUri, GTM_ID } from "./config";
 import ConfigurationSection from "./configuration";
 import { getConfigMenuItemsPermissions } from "./configuration/utils";
 import AppStateProvider from "./containers/AppState";
@@ -79,7 +80,7 @@ errorTracker.init();
 const App: React.FC = () => (
   <SaleorProvider client={saleorClient}>
     <ApolloProvider client={apolloClient}>
-      <BrowserRouter basename={APP_MOUNT_URI}>
+      <BrowserRouter basename={getAppMountUri()}>
         <ThemeProvider overrides={themeOverrides}>
           <DateProvider>
             <LocaleProvider>
@@ -143,6 +144,12 @@ const Routes: React.FC = () => {
                 type: "displayError",
               });
             }}
+            fallbackRender={({ resetErrorBoundary }) => (
+              <ErrorPage
+                onBack={resetErrorBoundary}
+                onRefresh={() => window.location.reload()}
+              />
+            )}
           >
             <Switch>
               <SectionRoute exact path="/" component={HomePage} />
@@ -222,11 +229,7 @@ const Routes: React.FC = () => {
                 path="/site-settings"
                 component={SiteSettingsSection}
               />
-              <SectionRoute
-                permissions={[PermissionEnum.MANAGE_SETTINGS]}
-                path="/taxes"
-                component={TaxesSection}
-              />
+              <SectionRoute path="/taxes" component={TaxesSection} />
               <SectionRoute
                 permissions={[PermissionEnum.MANAGE_SHIPPING]}
                 path="/shipping"

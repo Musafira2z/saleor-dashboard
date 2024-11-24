@@ -26,7 +26,7 @@ export interface ColumnPickerProps
   defaultColumns: string[];
   initialColumns: Choice[];
   initialOpen?: boolean;
-  IconButtonProps?: IconButtonProps;
+  IconButtonProps?: Omit<IconButtonProps, "ref">;
   query: string;
   onSave: (columns: string[]) => void;
 }
@@ -35,6 +35,7 @@ const useStyles = makeStyles(
   theme => ({
     popper: {
       marginTop: theme.spacing(1),
+      zIndex: 1,
     },
   }),
   {
