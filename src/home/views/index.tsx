@@ -17,7 +17,6 @@ import HomePage from "../components/HomePage";
 const HomeSection = () => {
   const { user } = useUser();
   const { channel } = useAppChannel();
-
   const noChannel = !channel && typeof channel !== "undefined";
 
   const { data } = useHomeQuery({
@@ -25,6 +24,7 @@ const HomeSection = () => {
     skip: noChannel,
     variables: { channel: channel?.slug, datePeriod: getDatePeriod(1) },
   });
+  // { gte: "2023-09-10", lte: "2023-09-10" }
 
   return (
     <HomePage

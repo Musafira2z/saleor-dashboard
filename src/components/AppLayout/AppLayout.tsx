@@ -4,8 +4,6 @@ import useAppState from "@saleor/hooks/useAppState";
 import {
   makeStyles,
   SaleorTheme,
-  Sidebar,
-  SidebarDrawer,
   useActionBar,
   useBacklink,
   useTheme,
@@ -19,6 +17,8 @@ import useRouter from "use-react-router";
 import Container from "../Container";
 import Navigator from "../Navigator";
 import NavigatorButton from "../NavigatorButton/NavigatorButton";
+import { Sidebar } from "../Sidebar";
+import { SidebarDrawer } from "../SidebarDrawer";
 import UserChip from "../UserChip";
 import useAppChannel from "./AppChannelContext";
 import AppChannelSelect from "./AppChannelSelect";
