@@ -38,6 +38,7 @@ export interface OrderListPageProps
   limits: RefreshLimitsQuery["shop"]["limits"];
   orders: RelayToFlat<OrderListQuery["orders"]>;
   onSettingsOpen: () => void;
+  onExport: () => void;
   onAdd: () => void;
 }
 
@@ -60,6 +61,7 @@ const OrderListPage: React.FC<OrderListPageProps> = ({
   onAll,
   onSearchChange,
   onSettingsOpen,
+  onExport,
   onFilterChange,
   onTabChange,
   onTabDelete,
@@ -107,6 +109,10 @@ const OrderListPage: React.FC<OrderListPageProps> = ({
                     description: "button",
                   }),
                   onSelect: onSettingsOpen,
+                },
+                {
+                  label: "Export Today orders",
+                  onSelect: onExport,
                 },
                 ...extensionMenuItems,
               ]}

@@ -5,10 +5,16 @@ import SaveFilterTabDialog, {
   SaveFilterTabDialogFormData,
 } from "@saleor/components/SaveFilterTabDialog";
 import { useShopLimitsQuery } from "@saleor/components/Shop/queries";
+import { Task } from "@saleor/containers/BackgroundTasks/types";
+import { giftCardExportDialogMessages as messages } from "@saleor/giftCards/GiftCardExportDialogContent/messages";
 import {
+  ExportScope,
+  FileTypesEnum,
+  useExportGiftCardsMutation,
   useOrderDraftCreateMutation,
   useOrderListQuery,
 } from "@saleor/graphql";
+import useBackgroundTask from "@saleor/hooks/useBackgroundTask";
 import useListSettings from "@saleor/hooks/useListSettings";
 import useNavigator from "@saleor/hooks/useNavigator";
 import useNotifier from "@saleor/hooks/useNotifier";
@@ -56,6 +62,7 @@ interface OrderListProps {
 export const OrderList: React.FC<OrderListProps> = ({ params }) => {
   const navigate = useNavigator();
   const notify = useNotifier();
+  const { queue } = useBackgroundTask();
   const { updateListSettings, settings } = useListSettings(
     ListViews.ORDER_LIST,
   );
@@ -156,6 +163,23 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
     urlFunc: orderListUrl,
   });
 
+  const [exportGiftCards] = useExportGiftCardsMutation({
+    onCompleted: data => {
+      const errors = data?.exportGiftCards?.errors;
+
+      if (!errors.length) {
+        notify({
+          text: intl.formatMessage(messages.successAlertDescription),
+          title: intl.formatMessage(messages.successAlertTitle),
+        });
+
+        queue(Task.EXPORT, {
+          id: data.exportGiftCards.exportFile.id,
+        });
+      }
+    },
+  });
+
   return (
     <PaginatorContext.Provider value={paginationValues}>
       <OrderListPage
@@ -178,6 +202,16 @@ export const OrderList: React.FC<OrderListProps> = ({ params }) => {
         tabs={getFilterTabs().map(tab => tab.name)}
         onAll={resetFilters}
         onSettingsOpen={() => navigate(orderSettingsPath)}
+        onExport={() => {
+          exportGiftCards({
+            variables: {
+              input: {
+                fileType: FileTypesEnum.XLSX,
+                scope: ExportScope.ALL,
+              },
+            },
+          });
+        }}
       />
       <SaveFilterTabDialog
         open={params.action === "save-search"}

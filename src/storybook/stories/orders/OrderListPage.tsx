@@ -75,6 +75,7 @@ const props: OrderListPageProps = {
   },
   limits,
   onSettingsOpen: () => undefined,
+  onExport: () => undefined,
   orders,
   sort: {
     ...sortPageProps.sort,
